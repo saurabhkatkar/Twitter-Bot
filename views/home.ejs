@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Twitter Title Icon -->
+    <link rel="shortcut icon" href="//abs.twimg.com/favicons/twitter.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="192x192" href="https://abs.twimg.com/responsive-web/client-web/icon-ios.8ea219d5.png" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <style>
+      .send-tweet,.showTweets{
+        width: 50%;
+      }
+        .btn-twitter,.btn-showTweets {
+            background-color: #00ccee;
+            color:white;
+        }
+        .btn-twitter:hover,.btn-showTweets:hover {
+            background-color: #00aaee;
+            color:white;
+        }
+
+        .tweetCards{
+          display: none;
+        }
+
+    </style>
+    
+
+    <title>Twitter API</title>
+  </head>
+  <body>
+      
+      <div class="mt-5 container">
+        
+        <h1>Twitter API Integration</h1>
+        <div class="send-tweet input-group mb-3 mt-3">
+            <input id="tweetMessage" type="text" class="form-control" placeholder="Tweet this" aria-label="Tweet this" aria-describedby="button-addon1">
+            <div class="input-group-append">
+              <button class="btn btn-twitter" type="button" id="button-addon1">Tweet</button>
+            </div>
+        </div>
+
+        <div class="showTweets input-group mb-3">
+          <input id="userName" type="text" class="form-control" placeholder="Enter User Name.. e.g twitterapi" aria-label="userName" aria-describedby="button-addon2">
+          <div class="input-group-append">
+            <button class="btn btn-showTweets" type="button" id="button-addon2">Show Tweets</button>
+          </div>
+        </div>
+
+        <div id="tweetList" class="d-flex flex-wrap border-0">
+          ...
+        </div>
+
+        <!-- <div class="mt-5  tweetCards" style="width: 30rem;">
+          <ul id="tweetList" class="list-group list-group-flush">
+            </ul>
+        </div> -->
+
+        
+
+       </div>
+       
+       
+       
+      
+      
+
+      <!-- MODEL for Alerts -->
+      <div id="tweetModel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="alertModelTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="alertModelTitle">Twitter Response</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="tweetResponse" class="modal-body">
+              <!-- <img src="https://image.freepik.com/free-vector/traffic-sign-page-404-found-flat-illustration_80328-232.jpg" alt="" srcset=""  height="80%" width="100%"> -->
+              <div class="row align-items-center">
+                <div class="col-4 right_image">
+                  <img src="https://img.pngio.com/correct-prompt-correct-right-icon-with-png-and-vector-format-for-correct-symbol-png-512_512.png" alt="" srcset="" height="100%" width="100%">
+                </div>
+                <div class="col-4 wrong_image">
+                  <img src="https://image.freepik.com/free-vector/access-denied-graphic-design-vector-illustration_24908-54485.jpg" alt="" srcset="" height="100%" width="100%">
+                </div>
+                <div class="col-8 response">
+               
+                </div> 
+                 
+                
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+    <script>
+      var base_url = window.location.origin;
+      
+      $('.btn-twitter').on('click',async ()=>{
+        var message = $('#tweetMessage').val();
+        var data = {
+          message: message
+        };
+        var url = `${base_url}/send`;
+        const response = await fetch(url,{
+          method:'POST',
+          headers: {
+           'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+        console.log(response.status);
+        $('#tweetResponse .row .response').empty();
+        if(response.status == 200){
+          $('.right_image').css("display","block");
+          $('.wrong_image').css("display","none");
+          $('#tweetResponse .row .response').append('<p> Tweet Successful </p>');
+        }else{
+          $('.wrong_image').css("display","block");
+          $('.right_image').css("display","none");
+          $('#tweetResponse .row .response').append('<p> Tweet Failed </p>');
+        }
+        $('#tweetModel').modal('show');
+        // const res = response.json();
+        // console.log(res);
+      });
+
+
+      $('.btn-showTweets').on('click',async ()=>{
+        var user = $('#userName').val() || 'katkar102';
+        
+        var data = {
+          userName: user,
+          count:5
+        };
+        var url = `${base_url}/tweets`;
+        const response = await fetch(url,{
+          method:'POST',
+          headers: {
+           'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+        console.log(response.status);
+        var resData = await response.json();
+        console.log(resData);
+        // $('.tweetCards').css('display','flex');
+        $('#tweetList').empty();
+        for (const [key, value] of Object.entries(resData)) {
+          
+          var element = `<div class="m-3"><blockquote class="twitter-tweet"><a href="https://twitter.com/${user}/status/${key}"></a></blockquote></div>`;
+
+          $('#tweetList').append(element);
+        }
+        twttr.widgets.load(
+          document.getElementById("tweetList")
+        );
+       
+      });
+    </script>
+  </body>
+</html>
